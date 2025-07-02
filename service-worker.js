@@ -1,18 +1,20 @@
 const CACHE_NAME = 'rescue-link-v1';
 const urlsToCache = [
-  '/',
-  '/index.html',
-  '/medical.html',
-  '/fire.html',
-  '/police.html',
-  'icons/icon-192x192.png',
-  'icons/icon-512x512.png'
+  '/rescue-link/',
+  '/rescue-link/index.html',
+  '/rescue-link/medical.html',
+  '/rescue-link/fire.html',
+  '/rescue-link/police.html',
+  '/rescue-link/icons/icon-192x192.png',
+  '/rescue-link/icons/icon-512x512.png'
 ];
 
 self.addEventListener('install', event => {
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(urlsToCache))
+      .then(cache => {
+        return cache.addAll(urlsToCache);
+      })
   );
 });
 
