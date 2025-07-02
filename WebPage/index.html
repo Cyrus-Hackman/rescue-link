@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RescueLink - Emergency Response App</title>
+    <link rel="manifest" href="app.webmanifest" />
+    <meta name="theme-color" content="#e74c3c" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --primary: #e74c3c;
+            --primary-dark: #c0392b;
+            --secondary: #3498db;
+            --secondary-dark: #2980b9;
+            --medical: #3498db;
+            --fire: #e67e22;
+            --police: #2c3e50;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+            --success: #2ecc71;
+            --warning: #f39c12;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            color: #333;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        #app-container {
+            max-width: 480px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Header Styles */
+        .app-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            padding: 20px 15px;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        
+        .logo-icon {
+            font-size: 2.5rem;
+            animation: pulse 2s infinite;
+        }
+        
+        .app-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        
+        .app-subtitle {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            max-width: 300px;
+            margin: 0 auto;
+        }
+        
+        /* Navigation */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .nav-tab {
+            flex: 1;
+            text-align: center;
+            padding: 15px 0;
+            font-weight: 600;
+            color: #777;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .nav-tab.active {
+            color: var(--primary);
+        }
+        
+        .nav-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary);
+        }
+        
+        /* Page Container */
+        .page-container {
+            padding: 20px;
+            transition: transform 0.4s ease;
+        }
+        
+        .page {
+            display: none;
+        }
+        
+        .page.active {
+            display: block;
+            animation: fadeIn 0.5s;
+        }
+        
+        /* Emergency Dashboard */
+        .emergency-alert {
+            background: linear-gradient(135deg, #ff6b6b, #e74c3c);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .alert-title {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+        
+        .alert-text {
+            font-size: 0.95rem;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .emergency-buttons {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .emergency-btn {
+            background: white;
+            border-radius: 15px;
+            padding: 20px 10px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            text-decoration: none;
+            display: block;
+            color: inherit;
+        }
+        
+        .emergency-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 7px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .emergency-btn.medical {
+            border-color: var(--medical);
+        }
+        
+        .emergency-btn.fire {
+            border-color: var(--fire);
+        }
+        
+        .emergency-btn.police {
+            border-color: var(--police);
+        }
+        
+        .btn-icon {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .medical .btn-icon { color: var(--medical); }
+        .fire .btn-icon { color: var(--fire); }
+        .police .btn-icon { color: var(--police); }
+        
+        .btn-label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+        
+        .location-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        .card-title i {
+            color: var(--secondary);
+        }
+        
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .location-icon {
+            width: 50px;
+            height: 50px;
+            background: #e3f2fd;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--secondary);
+        }
+        
+        .location-text {
+            flex: 1;
+        }
+        
+        .location-address {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .location-status {
+            font-size: 0.85rem;
+            color: var(--success);
+            font-weight: 600;
+        }
+        
+        /* Contacts Page */
+        .contacts-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 1.4rem;
+            color: var(--dark);
+        }
+        
+        .add-contact-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
+            transition: all 0.3s;
+        }
+        
+        .add-contact-btn:hover {
+            transform: rotate(90deg);
+            background: var(--primary-dark);
+        }
+        
+        .contacts-list {
+            margin-bottom: 30px;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+            transition: all 0.3s;
+            border-left: 4px solid var(--secondary);
+        }
+        
+        .contact-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .contact-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--secondary), var(--secondary-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-right: 15px;
+        }
+        
+        .contact-info {
+            flex: 1;
+        }
+        
+        .contact-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .contact-phone {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .contact-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .contact-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .edit-btn {
+            background: #e3f2fd;
+            color: var(--secondary);
+        }
+        
+        .delete-btn {
+            background: #ffebee;
+            color: var(--primary);
+        }
+        
+        .medical-profile {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+            margin-top: 20px;
+            border-left: 4px solid var(--success);
+        }
+        
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .profile-item {
+            background: #f8f9fa;
+            padding: 12px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .profile-label {
+            font-size: 0.85rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .profile-value {
+            font-weight: 600;
+            color: var(--dark);
+        }
+        
+        /* Footer */
+        .app-footer {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            color: #777;
+            font-size: 0.9rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* SOS Button */
+        .sos-btn {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px;
+            height: 70px;
+            background: var(--primary);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 20px rgba(231, 76, 60, 0.5);
+            cursor: pointer;
+            z-index: 100;
+            animation: pulse 1.5s infinite;
+            border: none;
+            transition: all 0.3s;
+        }
+        
+        .sos-btn:active {
+            transform: translateX(-50%) scale(0.95);
+            box-shadow: 0 2px 10px rgba(231, 76, 60, 0.7);
+        }
+        
+        /* Responsive */
+        @media (max-width: 480px) {
+            #app-container {
+                max-width: 100%;
+            }
+            
+            .emergency-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app-container">
+        <!-- App Header -->
+        <div class="app-header">
+            <div class="logo-container">
+                <i class="fas fa-shield-alt logo-icon"></i>
+                <div class="app-title">RescueLink</div>
+            </div>
+            <div class="app-subtitle">Emergency Response & Safety System</div>
+        </div>
+        
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-page="dashboard">Dashboard</div>
+            <div class="nav-tab" data-page="contacts">Emergency Contacts</div>
+        </div>
+        
+        <!-- Page Container -->
+        <div class="page-container">
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard-page">
+                <div class="emergency-alert">
+                    <div class="alert-title">Emergency Assistance</div>
+                    <div class="alert-text">Press one of the buttons below to request help</div>
+                </div>
+                
+                <div class="emergency-buttons">
+                    <a href="medical.html" class="emergency-btn medical">
+                        <i class="fas fa-heartbeat btn-icon"></i>
+                        <div class="btn-label">Medical</div>
+                    </a>
+                    <a href="fire.html" class="emergency-btn fire">
+                        <i class="fas fa-fire btn-icon"></i>
+                        <div class="btn-label">Fire</div>
+                    </a>
+                    <a href="police.html" class="emergency-btn police">
+                        <i class="fas fa-shield-alt btn-icon"></i>
+                        <div class="btn-label">Police</div>
+                    </a>
+                </div>
+                
+                <div class="location-card">
+                    <div class="card-title">
+                        <i class="fas fa-location-dot"></i>
+                        Your Current Location
+                    </div>
+                    <div class="location-info">
+                        <div class="location-icon">
+                            <i class="fas fa-map-marker-alt"></i>
+                        </div>
+                        <div class="location-text">
+                            <div class="location-address">123 Main Street, Apt 4B</div>
+                            <div class="location-status">Location accuracy: 5 meters</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="location-card">
+                    <div class="card-title">
+                        <i class="fas fa-user-group"></i>
+                        Emergency Contacts
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">JS</div>
+                        <div class="contact-info">
+                            <div class="contact-name">John Smith</div>
+                            <div class="contact-phone">+1 (555) 123-4567</div>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <div class="contact-avatar">ED</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Emily Davis</div>
+                            <div class="contact-phone">+1 (555) 987-6543</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medical-profile">
+                    <div class="card-title">
+                        <i class="fas fa-file-medical"></i>
+                        Medical Profile
+                    </div>
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <div class="profile-label">Blood Type</div>
+                            <div class="profile-value">O+</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Allergies</div>
+                            <div class="profile-value">Penicillin</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Conditions</div>
+                            <div class="profile-value">Asthma</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Medications</div>
+                            <div class="profile-value">Ventolin</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Contacts Page -->
+            <div class="page" id="contacts-page">
+                <div class="contacts-header">
+                    <div class="section-title">Emergency Contacts</div>
+                    <button class="add-contact-btn">
+                        <i class="fas fa-plus"></i>
+                    </button>
+                </div>
+                
+                <div class="contacts-list">
+                    <div class="contact-item">
+                        <div class="contact-avatar">JS</div>
+                        <div class="contact-info">
+                            <div class="contact-name">John Smith</div>
+                            <div class="contact-phone">+1 (555) 123-4567</div>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="contact-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="contact-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-avatar">ED</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Emily Davis</div>
+                            <div class="contact-phone">+1 (555) 987-6543</div>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="contact-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="contact-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-avatar">MR</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Michael Rodriguez</div>
+                            <div class="contact-phone">+1 (555) 456-7890</div>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="contact-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="contact-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="contact-item">
+                        <div class="contact-avatar">SP</div>
+                        <div class="contact-info">
+                            <div class="contact-name">Sarah Patel</div>
+                            <div class="contact-phone">+1 (555) 789-0123</div>
+                        </div>
+                        <div class="contact-actions">
+                            <button class="contact-btn edit-btn">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="contact-btn delete-btn">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="medical-profile">
+                    <div class="card-title">
+                        <i class="fas fa-file-medical"></i>
+                        Medical Profile Settings
+                    </div>
+                    <div class="profile-grid">
+                        <div class="profile-item">
+                            <div class="profile-label">Blood Type</div>
+                            <div class="profile-value">O+</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Allergies</div>
+                            <div class="profile-value">Edit</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Conditions</div>
+                            <div class="profile-value">Edit</div>
+                        </div>
+                        <div class="profile-item">
+                            <div class="profile-label">Medications</div>
+                            <div class="profile-value">Edit</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SOS Button -->
+        <button class="sos-btn">SOS</button>
+        
+        <!-- Footer -->
+        <div class="app-footer">
+            RescueLink Emergency Response System • Your Safety is Our Priority
+        </div>
+    </div>
+
+    <script>
+        // Navigation between pages
+        document.querySelectorAll('.nav-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                // Update active tab
+                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Show active page
+                const pageId = tab.getAttribute('data-page');
+                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+                document.getElementById(`${pageId}-page`).classList.add('active');
+            });
+        });
+        
+        // SOS button functionality
+        document.querySelector('.sos-btn').addEventListener('click', () => {
+            const isConfirmed = confirm('Are you sure you want to send an emergency SOS alert?');
+            if (isConfirmed) {
+                // Animation effect
+                const sosBtn = document.querySelector('.sos-btn');
+                sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                sosBtn.style.animation = 'none';
+                
+                setTimeout(() => {
+                    alert('EMERGENCY ALERT SENT! Help is on the way. Your location has been shared with emergency services and your contacts.');
+                    sosBtn.innerHTML = 'SOS';
+                    sosBtn.style.animation = 'pulse 1.5s infinite';
+                }, 1500);
+            }
+        });
+        
+        // Add contact button
+        document.querySelector('.add-contact-btn').addEventListener('click', () => {
+            alert('Add new emergency contact form would appear here.');
+        });
+        
+        // Contact actions
+        document.querySelectorAll('.edit-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const contactItem = btn.closest('.contact-item');
+                const contactName = contactItem.querySelector('.contact-name').textContent;
+                alert(`Editing contact: ${contactName}`);
+            });
+        });
+        
+        document.querySelectorAll('.delete-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const contactItem = btn.closest('.contact-item');
+                const contactName = contactItem.querySelector('.contact-name').textContent;
+                
+                if (confirm(`Are you sure you want to remove ${contactName} from your emergency contacts?`)) {
+                    contactItem.style.opacity = '0';
+                    contactItem.style.transform = 'translateX(100px)';
+                    setTimeout(() => {
+                        contactItem.remove();
+                    }, 300);
+                }
+            });
+        });
+    </script>
+    <script>
+        if ('serviceWorker' in navigator) {
+          window.addEventListener('load', () => {
+            navigator.serviceWorker.register('service-worker.js')
+              .then(reg => console.log('Service Worker registered:', reg))
+              .catch(err => console.error('Service Worker registration failed:', err));
+          });
+        }
+      </script>
+</body>
+</html>
