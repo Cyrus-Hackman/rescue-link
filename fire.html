@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RescueLink - Fire Emergency</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        :root {
+            --fire: #e67e22;
+            --fire-dark: #d35400;
+            --fire-light: #f39c12;
+            --smoke: #7f8c8d;
+            --success: #27ae60;
+            --warning: #f1c40f;
+            --dark: #2c3e50;
+            --light: #ecf0f1;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #8B0000, #B22222);
+            color: white;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Header */
+        .fire-header {
+            background: linear-gradient(135deg, var(--fire), var(--fire-dark));
+            padding: 25px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .back-button {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-50%) scale(1.1);
+        }
+        
+        .fire-title {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .fire-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+        
+        /* Main Content */
+        .fire-content {
+            padding: 30px;
+        }
+        
+        .section {
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 4px solid var(--fire);
+        }
+        
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: var(--light);
+        }
+        
+        .section-title i {
+            color: var(--fire);
+        }
+        
+        .fire-service-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .fire-service-card:hover {
+            border-color: var(--fire);
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .fire-icon {
+            font-size: 4rem;
+            color: var(--fire);
+            margin-bottom: 15px;
+            animation: pulse 2s infinite;
+        }
+        
+        .fire-text {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+        
+        .action-button {
+            background: linear-gradient(to right, var(--fire), var(--fire-dark));
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 5px 15px rgba(230, 126, 34, 0.4);
+        }
+        
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(230, 126, 34, 0.6);
+        }
+        
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+        
+        .location-icon {
+            width: 50px;
+            height: 50px;
+            background: rgba(230, 126, 34, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--fire);
+        }
+        
+        .location-text {
+            flex: 1;
+        }
+        
+        .location-address {
+            font-weight: 500;
+            margin-bottom: 5px;
+            font-size: 1.1rem;
+        }
+        
+        .location-status {
+            font-size: 0.9rem;
+            color: var(--success);
+        }
+        
+        /* Emergency Form */
+        .emergency-form {
+            margin-top: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            font-size: 1.1rem;
+        }
+        
+        .form-textarea {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 15px;
+            color: white;
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: all 0.3s;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--fire);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .form-note {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-top: 5px;
+            font-style: italic;
+        }
+        
+        /* Safety Tips */
+        .safety-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .safety-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            transition: all 0.3s;
+        }
+        
+        .safety-item:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .safety-icon {
+            font-size: 2rem;
+            color: var(--fire-light);
+            margin-bottom: 10px;
+        }
+        
+        .safety-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 8px;
+        }
+        
+        .safety-value {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+        
+        /* Footer */
+        .fire-footer {
+            text-align: center;
+            padding: 25px;
+            background: rgba(0, 0, 0, 0.2);
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+        
+        /* Map Preview */
+        .map-preview {
+            height: 200px;
+            background: linear-gradient(135deg, #ff9a3d, #e67e22);
+            border-radius: 12px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .map-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+        }
+        
+        /* Animations */
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        /* Responsive */
+        @media (max-width: 600px) {
+            .fire-header {
+                padding: 20px 15px 20px 60px;
+            }
+            
+            .back-button {
+                left: 15px;
+            }
+            
+            .fire-title {
+                font-size: 1.8rem;
+            }
+            
+            .fire-content {
+                padding: 20px;
+            }
+            
+            .fire-icon {
+                font-size: 3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="fire-header">
+            <button class="back-button" onclick="window.history.back()">
+                <i class="fas fa-arrow-left"></i>
+            </button>
+            <h1 class="fire-title">Fire Emergency Assistance</h1>
+            <p class="fire-subtitle">Get immediate help from the fire department and share your location</p>
+        </header>
+        
+        <!-- Main Content -->
+        <div class="fire-content">
+            <!-- Fire Service Request Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-fire-extinguisher"></i>
+                    Report a Fire Emergency
+                </h2>
+                
+                <div class="fire-service-card">
+                    <i class="fas fa-fire fire-icon"></i>
+                    <p class="fire-text">
+                        Alert the fire department immediately. Our system will notify the nearest station and share your location.
+                    </p>
+                    <button class="action-button" id="requestFireService">
+                        <i class="fas fa-bell"></i>
+                        Alert Fire Department
+                    </button>
+                </div>
+                
+                <div class="location-info">
+                    <div class="location-icon">
+                        <i class="fas fa-location-dot"></i>
+                    </div>
+                    <div class="location-text">
+                        <div class="location-address">123 Main Street, Apt 4B, New York, NY</div>
+                        <div class="location-status">Location accuracy: High (5 meters)</div>
+                    </div>
+                </div>
+                
+                <div class="map-preview">
+                    <div class="map-overlay">
+                        <i class="fas fa-map-marker-alt"></i> Your Current Location
+                    </div>
+                </div>
+                
+                <button class="action-button" id="shareLocation" style="width: 100%; justify-content: center;">
+                    <i class="fas fa-share-alt"></i>
+                    Share Live Location with Emergency Contacts
+                </button>
+            </div>
+            
+            <!-- Emergency Details Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-file-invoice"></i>
+                    Describe the Fire Emergency
+                </h2>
+                <p>Provide details to help firefighters prepare (optional but recommended)</p>
+                
+                <div class="emergency-form">
+                    <div class="form-group">
+                        <label class="form-label">What is the nature of the fire?</label>
+                        <textarea class="form-textarea" placeholder="Describe the fire size, location, hazardous materials, people trapped, etc..."></textarea>
+                        <div class="form-note">This information will be sent directly to the fire department</div>
+                    </div>
+                    
+                    <button class="action-button" id="sendAlert" style="width: 100%; justify-content: center;">
+                        <i class="fas fa-paper-plane"></i>
+                        Send Emergency Alert
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Fire Safety Section -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-shield-alt"></i>
+                    Fire Safety Guidance
+                </h2>
+                <p>Critical safety information while you wait for help</p>
+                
+                <div class="safety-grid">
+                    <div class="safety-item">
+                        <i class="fas fa-door-open safety-icon"></i>
+                        <div class="safety-label">Evacuation</div>
+                        <div class="safety-value">Exit Immediately</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-wind safety-icon"></i>
+                        <div class="safety-label">Smoke Safety</div>
+                        <div class="safety-value">Stay Low</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-door-closed safety-icon"></i>
+                        <div class="safety-label">Trapped Inside</div>
+                        <div class="safety-value">Seal Doors</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-fire safety-icon"></i>
+                        <div class="safety-label">Small Fire</div>
+                        <div class="safety-value">Use Extinguisher</div>
+                    </div>
+                </div>
+                
+                <div class="safety-instructions">
+                    <h3 style="margin: 20px 0 10px; color: var(--warning);">Emergency Fire Safety Steps:</h3>
+                    <ol style="padding-left: 20px; line-height: 1.8;">
+                        <li><strong>Alert others</strong> - Shout "FIRE!" as you exit</li>
+                        <li><strong>Evacuate immediately</strong> - Use stairs, not elevators</li>
+                        <li><strong>Check doors for heat</strong> - Don't open hot doors</li>
+                        <li><strong>Stay low in smoke</strong> - Crawl below smoke level</li>
+                        <li><strong>Call for help</strong> - Once safely outside</li>
+                    </ol>
+                </div>
+            </div>
+            
+            <!-- Fire Prevention Tips -->
+            <div class="section">
+                <h2 class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    Fire Prevention Tips
+                </h2>
+                
+                <div class="safety-grid">
+                    <div class="safety-item">
+                        <i class="fas fa-smoking safety-icon"></i>
+                        <div class="safety-label">Smoking</div>
+                        <div class="safety-value">Outside Only</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-plug safety-icon"></i>
+                        <div class="safety-label">Electrical</div>
+                        <div class="safety-value">Don't Overload</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-kitchen-set safety-icon"></i>
+                        <div class="safety-label">Cooking</div>
+                        <div class="safety-value">Stay Alert</div>
+                    </div>
+                    <div class="safety-item">
+                        <i class="fas fa-tree safety-icon"></i>
+                        <div class="safety-label">Outdoor</div>
+                        <div class="safety-value">Clear Debris</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="fire-footer">
+            <p>RescueLink Fire Emergency Services • Average response time: 5-7 minutes in urban areas</p>
+            <p>Remember: Your safety is the top priority - evacuate immediately if fire is present</p>
+        </footer>
+    </div>
+    
+    <script>
+        // Simulate fire service request
+        document.getElementById('requestFireService').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Alerting Fire Department...';
+            this.disabled = true;
+            
+            setTimeout(() => {
+                alert('Fire department alerted! Help is on the way. Estimated arrival: 6 minutes.\n\nRemember to evacuate if it is safe to do so.');
+                this.innerHTML = '<i class="fas fa-check"></i> Fire Department Alerted';
+            }, 2000);
+        });
+        
+        // Share location functionality
+        document.getElementById('shareLocation').addEventListener('click', function() {
+            const originalText = this.innerHTML;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sharing Location...';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Location Shared!';
+                setTimeout(() => {
+                    this.innerHTML = originalText;
+                }, 3000);
+            }, 1500);
+        });
+        
+        // Send emergency alert
+        document.getElementById('sendAlert').addEventListener('click', function() {
+            this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Sending Alert...';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Alert Sent!';
+                alert('Fire emergency alert sent! Fire department and your emergency contacts have been notified.');
+            }, 1500);
+        });
+    </script>
+</body>
+</html>
