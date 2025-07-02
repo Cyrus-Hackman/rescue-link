@@ -4,8 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RescueLink - Emergency Response App</title>
-    <link rel="manifest" href="app.webmanifest" />
-    <meta name="theme-color" content="#e74c3c" />
+   <link rel="manifest" href="/rescue-link/app.webmanifest" />
+  <meta name="theme-color" content="#e74c3c" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * {
@@ -681,77 +681,75 @@
         </div>
     </div>
 
-    <script>
-        // Navigation between pages
-        document.querySelectorAll('.nav-tab').forEach(tab => {
-            tab.addEventListener('click', () => {
-                // Update active tab
-                document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
-                tab.classList.add('active');
-                
-                // Show active page
-                const pageId = tab.getAttribute('data-page');
-                document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
-                document.getElementById(`${pageId}-page`).classList.add('active');
-            });
+   <script>
+    // Navigation tab switching
+    document.querySelectorAll('.nav-tab').forEach(tab => {
+        tab.addEventListener('click', () => {
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+
+            const pageId = tab.getAttribute('data-page');
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(`${pageId}-page`).classList.add('active');
         });
-        
-        // SOS button functionality
-        document.querySelector('.sos-btn').addEventListener('click', () => {
-            const isConfirmed = confirm('Are you sure you want to send an emergency SOS alert?');
-            if (isConfirmed) {
-                // Animation effect
-                const sosBtn = document.querySelector('.sos-btn');
-                sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
-                sosBtn.style.animation = 'none';
-                
+    });
+
+    // SOS button functionality
+    document.querySelector('.sos-btn').addEventListener('click', () => {
+        const isConfirmed = confirm('Are you sure you want to send an emergency SOS alert?');
+        if (isConfirmed) {
+            const sosBtn = document.querySelector('.sos-btn');
+            sosBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+            sosBtn.style.animation = 'none';
+
+            setTimeout(() => {
+                alert('EMERGENCY ALERT SENT! Help is on the way. Your location has been shared with emergency services and your contacts.');
+                sosBtn.innerHTML = 'SOS';
+                sosBtn.style.animation = 'pulse 1.5s infinite';
+            }, 1500);
+        }
+    });
+
+    // Add contact button
+    document.querySelector('.add-contact-btn').addEventListener('click', () => {
+        alert('Add new emergency contact form would appear here.');
+    });
+
+    // Contact edit/delete actions
+    document.querySelectorAll('.edit-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const contactItem = btn.closest('.contact-item');
+            const contactName = contactItem.querySelector('.contact-name').textContent;
+            alert(`Editing contact: ${contactName}`);
+        });
+    });
+
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const contactItem = btn.closest('.contact-item');
+            const contactName = contactItem.querySelector('.contact-name').textContent;
+
+            if (confirm(`Are you sure you want to remove ${contactName} from your emergency contacts?`)) {
+                contactItem.style.opacity = '0';
+                contactItem.style.transform = 'translateX(100px)';
                 setTimeout(() => {
-                    alert('EMERGENCY ALERT SENT! Help is on the way. Your location has been shared with emergency services and your contacts.');
-                    sosBtn.innerHTML = 'SOS';
-                    sosBtn.style.animation = 'pulse 1.5s infinite';
-                }, 1500);
+                    contactItem.remove();
+                }, 300);
             }
         });
-        
-        // Add contact button
-        document.querySelector('.add-contact-btn').addEventListener('click', () => {
-            alert('Add new emergency contact form would appear here.');
+    });
+
+    // ✅ Correct service worker registration for GitHub Pages
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/rescue-link/service-worker.js', { scope: '/rescue-link/' })
+                .then(reg => console.log('Service Worker registered:', reg))
+                .catch(err => console.error('Service Worker registration failed:', err));
         });
-        
-        // Contact actions
-        document.querySelectorAll('.edit-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const contactItem = btn.closest('.contact-item');
-                const contactName = contactItem.querySelector('.contact-name').textContent;
-                alert(`Editing contact: ${contactName}`);
-            });
-        });
-        
-        document.querySelectorAll('.delete-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                const contactItem = btn.closest('.contact-item');
-                const contactName = contactItem.querySelector('.contact-name').textContent;
-                
-                if (confirm(`Are you sure you want to remove ${contactName} from your emergency contacts?`)) {
-                    contactItem.style.opacity = '0';
-                    contactItem.style.transform = 'translateX(100px)';
-                    setTimeout(() => {
-                        contactItem.remove();
-                    }, 300);
-                }
-            });
-        });
-    </script>
-    <script>
-        if ('serviceWorker' in navigator) {
-          window.addEventListener('load', () => {
-            navigator.serviceWorker.register('service-worker.js')
-              .then(reg => console.log('Service Worker registered:', reg))
-              .catch(err => console.error('Service Worker registration failed:', err));
-          });
-        }
-      </script>
+    }
+</script>
+
 </body>
 </html>
